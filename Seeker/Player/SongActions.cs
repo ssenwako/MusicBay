@@ -34,6 +34,7 @@ namespace Seeker.Player
         const int MenuAddToQueue = 2;
         const int MenuAddToPlaylist = 3;
         const int MenuRemove = 4;
+        const int MenuDownload = 5;
 
         /// <param name="onRemove">When set, the menu also offers removing the song from the open playlist.</param>
         public static void ShowMenu(Context context, View anchor, Song song, Action onRemove = null)
@@ -44,6 +45,7 @@ namespace Seeker.Player
             // shortcut: playlists hold MediaStore IDs only, so streamed songs cannot join them yet
             if (song.StreamId == null) { popup.Menu.Add(0, MenuAddToPlaylist, 2, Resource.String.playlist_add_to); }
             if (onRemove != null) { popup.Menu.Add(0, MenuRemove, 3, Resource.String.playlist_remove_song); }
+            if (song.StreamId != null && context is Android.App.Activity activity) { popup.Menu.Add(0, MenuDownload, 4, Resource.String.stream_download); }
             popup.MenuItemClick += (s, e) =>
             {
                 switch (e.Item.ItemId)
@@ -58,6 +60,9 @@ namespace Seeker.Player
                         break;
                     case MenuAddToPlaylist:
                         AddToPlaylist(context, new[] { song });
+                        break;
+                    case MenuDownload:
+                        StreamDownloads.Start((Android.App.Activity)context, new[] { song });
                         break;
                     default:
                         onRemove();

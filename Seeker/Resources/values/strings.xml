@@ -1024,6 +1024,16 @@
     <string name="stream_albums_empty">Albums you open in streaming mode show up here.</string>
     <string name="stream_playlists_signin">Sign in to see your YouTube Music playlists and Liked Music.</string>
     <string name="stream_sign_in">Sign in</string>
+    <string name="stream_download">Download</string>
+    <string name="stream_download_all">Download all</string>
+    <string name="stream_download_title">Download from YouTube Music</string>
+    <string name="stream_download_message">Only download music you have the right to keep, such as your own uploads or freely licensed tracks. Downloading other music breaks YouTube’s terms and may break copyright law where you live.\n\nFiles are saved in Music/MusicBay, one folder per album, and show up in your Library. Quality is AAC at about 128 kbps; for higher quality, use Soulseek.</string>
+    <string name="stream_download_channel">YouTube Music downloads</string>
+    <string name="stream_download_progress">%1$d of %2$d: %3$s</string>
+    <string name="stream_downloading_now">Downloading %1$d of %2$d · %3$s</string>
+    <string name="stream_download_done">%1$d saved to Music/MusicBay</string>
+    <string name="stream_download_done_failed">%1$d saved, %2$d failed</string>
+    <string name="stream_download_permission">Allow storage access, then tap Download again.</string>
     <string name="stream_searching">Searching…</string>
     <string name="stream_search_failed">Couldn’t reach YouTube Music. Check your connection and try again.</string>
     <string name="stream_failed">Couldn’t play %1$s</string>
@@ -1060,6 +1070,10 @@
     <string name="library_folders_title">Folders in your library</string>
     <string name="library_folders_action">Choose folders</string>
     <string name="library_all_hidden">Every folder is hidden from your library</string>
+    <plurals name="stream_downloading">
+        <item quantity="one">Downloading %d song. Progress is in Downloads.</item>
+        <item quantity="other">Downloading %d songs. Progress is in Downloads.</item>
+    </plurals>
     <plurals name="song_count">
         <item quantity="one">%d song</item>
         <item quantity="other">%d songs</item>

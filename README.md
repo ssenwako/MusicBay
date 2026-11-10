@@ -222,6 +222,10 @@ dotnet build Seeker/Seeker.csproj -c Release -f net10.0-android36.0 -t:SignAndro
     <a href="https://github.com/Tyrrrz/YoutubeExplode">YoutubeExplode</a> by Oleksii Holub (LGPL-3.0), used to find the
     audio streams for songs from YouTube Music.
   </li>
+  <li>
+    <a href="https://github.com/mono/taglib-sharp">TagLib#</a> (LGPL-2.1), used to write titles, artists, albums and covers
+    into saved songs.
+  </li>
 </ul>
 
 <p>

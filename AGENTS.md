@@ -32,6 +32,7 @@ Everything MusicBay added is in `Seeker/Player/`. The rest is mostly Seeker's So
 | `SongListActivity.cs`, `PlaylistActivity.cs` | Album or artist page, playlist page |
 | `NowPlayingActivity.cs`, `MiniPlayer.cs`, `SoundActivity.cs` | Player screen, mini player, output and EQ screen |
 | `AppUpdater.cs` | Update prompt |
+| `StreamDownloads.cs` | Downloads streamed songs: TagLibSharp writes the tags and cover, MediaStore saves them to `Music/MusicBay/<Artist> - <Album>/` so each album is one folder |
 | `Walkthrough.cs` | First-run tour, only on a fresh install (first install time equals last update time) |
 | `StreamFragment.cs` | Streaming mode (Search menu, no tab): YouTube Music search. Pages come from `Common/YtMusic.cs`; `PlayerService.OpenStream` finds the audio with YoutubeExplode |
 

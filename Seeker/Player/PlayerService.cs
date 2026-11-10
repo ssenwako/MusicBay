@@ -244,7 +244,14 @@ namespace Seeker.Player
             Refresh();
         }
 
-        static readonly YoutubeExplode.YoutubeClient youtube = new YoutubeExplode.YoutubeClient(new System.Net.Http.HttpClient(new System.Net.Http.SocketsHttpHandler()));
+        internal static readonly YoutubeExplode.YoutubeClient Youtube = new YoutubeExplode.YoutubeClient(new System.Net.Http.HttpClient(new System.Net.Http.SocketsHttpHandler()));
+
+        // AAC in MP4 plays on every Android version; opus in WebM only when no MP4 stream is offered
+        internal static YoutubeExplode.Videos.Streams.IStreamInfo BestAudio(YoutubeExplode.Videos.Streams.StreamManifest manifest) =>
+            manifest.GetAudioOnlyStreams()
+                .OrderByDescending(s => s.Container == YoutubeExplode.Videos.Streams.Container.Mp4)
+                .ThenByDescending(s => s.Bitrate.BitsPerSecond)
+                .First();
 
         async void OpenStream(MediaPlayer target, Song song)
         {
@@ -252,13 +259,9 @@ namespace Seeker.Player
             {
                 // off the main thread: Android's HTTP handler connects on the calling thread
                 var watch = System.Diagnostics.Stopwatch.StartNew();
-                var manifest = await Task.Run(async () => await youtube.Videos.Streams.GetManifestAsync(song.StreamId));
+                var manifest = await Task.Run(async () => await Youtube.Videos.Streams.GetManifestAsync(song.StreamId));
                 Logger.Debug("stream manifest in " + watch.ElapsedMilliseconds + " ms");
-                // AAC in MP4 plays on every Android version; opus in WebM only when no MP4 stream is offered
-                var audio = manifest.GetAudioOnlyStreams()
-                    .OrderByDescending(s => s.Container == YoutubeExplode.Videos.Streams.Container.Mp4)
-                    .ThenByDescending(s => s.Bitrate.BitsPerSecond)
-                    .First();
+                var audio = BestAudio(manifest);
                 if (player != target) { return; } // skipped to another song meanwhile
                 song.StreamFormat = (audio.Container == YoutubeExplode.Videos.Streams.Container.Mp4 ? "AAC" : "Opus") + " · " + (int)audio.Bitrate.KiloBitsPerSecond + " kbps";
                 target.SetDataSource(audio.Url);

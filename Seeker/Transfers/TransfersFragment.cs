@@ -1,4 +1,5 @@
-﻿using Android.Content;
+﻿// Part of Seeker; modified for MusicBay. Copyright (c) 2026 Arsen. Modified: shows YouTube Music download progress at the top.
+using Android.Content;
 using Seeker.Browse;
 using Seeker.Services;
 using Android.Content.Res;
@@ -351,6 +352,7 @@ namespace Seeker
 
         public override void OnDestroy()
         {
+            Seeker.Player.StreamDownloads.Changed -= SetNoTransfersMessage;
             try
             {
                 TransfersActionMode?.Finish();
@@ -396,7 +398,8 @@ namespace Seeker
             else
             {
                 setupUpSharing.Visibility = ViewStates.Gone;
-                if (!(TransferItems.TransferItemManagerDL.IsEmpty()))
+                // a YouTube Music download shows its own bar at the top, so "No downloads" would contradict it
+                if (!(TransferItems.TransferItemManagerDL.IsEmpty()) || Seeker.Player.StreamDownloads.Current != null)
                 {
                     noTransfers.Visibility = ViewStates.Gone;
                 }
@@ -424,6 +427,9 @@ namespace Seeker
             this.noTransfersSubtitle = rootView.FindViewById<TextView>(Resource.Id.noTransfersSubtitle);
             this.setupUpSharing = rootView.FindViewById<Button>(Resource.Id.setUpSharing);
             this.setupUpSharing.Click += SetupUpSharing_Click;
+            rootView.FindViewById<FrameLayout>(Resource.Id.stream_download_slot).AddView(new Seeker.Player.DownloadProgressView(Context));
+            Seeker.Player.StreamDownloads.Changed -= SetNoTransfersMessage; // the view can be created again without OnDestroy
+            Seeker.Player.StreamDownloads.Changed += SetNoTransfersMessage;
 
             this.RegisterForContextMenu(recyclerViewTransferItems); //doesnt work for recycle views
 

@@ -61,7 +61,11 @@ namespace Seeker.Player
             list.AddItemDecoration(new InsetDivider(this));
 
             FindViewById(Resource.Id.playlist_back).Click += (s, e) => Finish();
-            FindViewById(Resource.Id.playlist_more).Click += (s, e) => { if (songs.Count > 0) { SongActions.AddToPlaylist(this, songs); } };
+            FindViewById(Resource.Id.playlist_more).Click += (s, e) =>
+            {
+                if (songs.Count == 0) { return; }
+                if (Intent.GetStringExtra(ExtraStreamBrowseId) != null) { StreamDownloads.Start(this, songs); } else { SongActions.AddToPlaylist(this, songs); }
+            };
             FindViewById<ImageButton>(Resource.Id.playlist_more).SetImageResource(Resource.Drawable.ic_playlist_add_24);
             FindViewById(Resource.Id.playlist_more).ContentDescription = GetString(Resource.String.playlist_add_to);
             FindViewById(Resource.Id.playlist_play).Click += (s, e) => { if (songs.Count > 0) { Playback.Shuffle = false; PlayFrom(0); } };
@@ -108,7 +112,9 @@ namespace Seeker.Player
         {
             if (songs.Count > 0) { return; } // already loaded; coming back from Now Playing should not fetch again
             YtAccount.Load(this); // the app may have been restarted straight onto this page
-            FindViewById(Resource.Id.playlist_more).Visibility = ViewStates.Gone; // playlists hold phone songs only
+            // playlists hold phone songs only, so this page's button downloads the songs instead
+            FindViewById<ImageButton>(Resource.Id.playlist_more).SetImageResource(Resource.Drawable.ic_download_white_24);
+            FindViewById(Resource.Id.playlist_more).ContentDescription = GetString(Resource.String.stream_download_all);
             name.Text = Intent.GetStringExtra(ExtraStreamTitle);
             string art = Intent.GetStringExtra(ExtraStreamArt);
             if (art != null)
@@ -120,8 +126,10 @@ namespace Seeker.Player
             {
                 var found = await Common.YtMusic.SongsAsync(Intent.GetStringExtra(ExtraStreamBrowseId));
                 if (IsFinishing || IsDestroyed) { return; }
-                songs = found.Select(Song.FromStream).ToList();
                 string artist = Intent.GetStringExtra(ExtraStreamArtist);
+                // album pages often leave the artist off each track; the album's artist is theirs too
+                foreach (var item in found.Where(i => i.Artist == "")) { item.Artist = artist ?? ""; }
+                songs = found.Select(Song.FromStream).ToList();
                 string count = Resources.GetQuantityString(Resource.Plurals.song_count, songs.Count, songs.Count);
                 detail.Text = string.IsNullOrEmpty(artist) ? count : artist + " · " + count;
                 empty.Visibility = songs.Count == 0 ? ViewStates.Visible : ViewStates.Gone;
