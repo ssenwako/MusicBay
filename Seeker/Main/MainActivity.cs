@@ -181,7 +181,14 @@ namespace Seeker
             AndroidX.Core.View.ViewCompat.SetOnApplyWindowInsetsListener(
                 FindViewById(Resource.Id.main_root), new HorizontalInsetsListener());
 
-            FindViewById<Seeker.Player.GlassTabBar>(Resource.Id.navigation).PageSelected = page => pager.SetCurrentItem(page == 1 && Seeker.Player.StreamFragment.Active ? Seeker.Player.StreamFragment.Page : page, false);
+            Seeker.Player.StreamFragment.LoadSource(this);
+            var tabBar = FindViewById<Seeker.Player.GlassTabBar>(Resource.Id.navigation);
+            tabBar.PageSelected = page =>
+            {
+                if (page == 1) { page = Seeker.Player.StreamFragment.OnSearchTab(this, pager.CurrentItem); }
+                if (page >= 0) { pager.SetCurrentItem(page, false); }
+                else { tabBar.Select(pager.CurrentItem); } // the source chooser is open; the highlight stays where the page is
+            };
 
 
             AndroidX.AppCompat.Widget.Toolbar myToolbar = (AndroidX.AppCompat.Widget.Toolbar)FindViewById(Resource.Id.toolbar);
@@ -1065,8 +1072,7 @@ namespace Seeker
         public void OnPagerPageSelected(int position)
         {
             // streaming mode stays on across tab changes until something shows Soulseek search again
-            if (position == Seeker.Player.StreamFragment.Page) { Seeker.Player.StreamFragment.Active = true; }
-            else if (position == 1) { Seeker.Player.StreamFragment.Active = false; }
+            Seeker.Player.StreamFragment.OnPageShown(this, position);
             // Home, Library and Stream carry their own controls; only Search, Downloads and Browse have actions for the bar
             FindViewById(Resource.Id.toolbar).Visibility = position == 0 || position >= 4 ? ViewStates.Gone : ViewStates.Visible;
             if (position != 0)

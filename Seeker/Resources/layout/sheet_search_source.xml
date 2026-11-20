@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="@string/source_title"
+        android:textColor="?attr/cellTextColor"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/source_soulseek"
+        style="@style/MB.SourceRow">
+
+        <ImageView
+            style="@style/MB.SourceIcon"
+            android:src="@drawable/baseline_search_white_24" />
+
+        <LinearLayout style="@style/MB.SourceText">
+
+            <TextView
+                style="@style/MB.SourceTitle"
+                android:text="@string/source_soulseek" />
+
+            <TextView
+                style="@style/MB.SourceDetail"
+                android:text="@string/source_soulseek_detail" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/source_soulseek_check"
+            style="@style/MB.SourceCheck" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/source_youtube"
+        style="@style/MB.SourceRow">
+
+        <ImageView
+            style="@style/MB.SourceIcon"
+            android:src="@drawable/ic_music_note_24" />
+
+        <LinearLayout style="@style/MB.SourceText">
+
+            <TextView
+                style="@style/MB.SourceTitle"
+                android:text="@string/stream_source" />
+
+            <TextView
+                style="@style/MB.SourceDetail"
+                android:text="@string/source_youtube_detail" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/source_youtube_check"
+            style="@style/MB.SourceCheck" />
+    </LinearLayout>
+</LinearLayout>

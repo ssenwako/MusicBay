@@ -106,7 +106,7 @@
   </tr>
   <tr>
     <td><strong>Where to find it</strong></td>
-    <td>Open the &#8942; menu on the Search tab and choose <em>Enter streaming mode</em>. It stays on while you switch tabs; the back arrow returns to Soulseek search.</td>
+    <td>The first time you tap Search, choose <em>Soulseek network</em> or <em>YouTube Music</em>. Search then opens the one you used last; tap Search again to switch. Picking YouTube Music always shows what streaming mode is first.</td>
   </tr>
   <tr>
     <td><strong>Listen</strong></td>

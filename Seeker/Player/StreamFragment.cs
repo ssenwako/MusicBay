@@ -43,9 +43,11 @@ namespace Seeker.Player
     {
         /// <summary>Pager page; it has no tab and shows under Search.</summary>
         public const int Page = 5;
-        /// <summary>While on, the Search tab opens streaming mode instead of Soulseek search.</summary>
-        public static bool Active;
+        /// <summary>While on, the Search tab opens streaming mode instead of Soulseek search. Kept across restarts.</summary>
+        public static bool Active { get; private set; }
         const int SoulseekSearchPage = 1;
+        const string PrefsName = "musicbay_stream";
+        const string SourceKey = "search_source"; // absent until the first choice, which is when the chooser opens by itself
         const int AlbumArtDp = 200;
         const int RowCardWidthDp = 150; // as Home's rows
         const int MinAlbumColumnDp = 160;
@@ -130,6 +132,48 @@ namespace Seeker.Player
         {
             Playback.Changed -= OnPlaybackChanged;
             base.OnPause();
+        }
+
+        static ISharedPreferences Prefs(Context context) => context.GetSharedPreferences(PrefsName, FileCreationMode.Private);
+
+        public static void LoadSource(Context context) => Active = Prefs(context).GetString(SourceKey, null) == "youtube";
+
+        /// <summary>Called as the pager shows a page: showing either search page makes it the Search tab's source.</summary>
+        public static void OnPageShown(Context context, int page)
+        {
+            if (page != Page && page != SoulseekSearchPage) { return; }
+            Active = page == Page;
+            Prefs(context).Edit().PutString(SourceKey, Active ? "youtube" : "soulseek").Apply();
+        }
+
+        /// <summary>
+        /// The Search tab was tapped. The first time, or when already searching, it offers the sources;
+        /// otherwise it opens the last one. Returns the page to show, or -1 when the chooser takes over.
+        /// </summary>
+        public static int OnSearchTab(Android.App.Activity activity, int currentPage)
+        {
+            bool chosen = Prefs(activity).Contains(SourceKey);
+            if (chosen && currentPage != SoulseekSearchPage && currentPage != Page) { return Active ? Page : SoulseekSearchPage; }
+            ChooseSource(activity);
+            return -1;
+        }
+
+        static void ChooseSource(Android.App.Activity activity)
+        {
+            var sheet = new Google.Android.Material.BottomSheet.BottomSheetDialog(activity, Resource.Style.SeekerBottomSheetDialog);
+            var view = activity.LayoutInflater.Inflate(Resource.Layout.sheet_search_source, null);
+            var soulseek = view.FindViewById(Resource.Id.source_soulseek);
+            var youtube = view.FindViewById(Resource.Id.source_youtube);
+            bool chosen = Prefs(activity).Contains(SourceKey);
+            view.FindViewById(Resource.Id.source_soulseek_check).Visibility = chosen && !Active ? ViewStates.Visible : ViewStates.Invisible;
+            view.FindViewById(Resource.Id.source_youtube_check).Visibility = chosen && Active ? ViewStates.Visible : ViewStates.Invisible;
+            soulseek.Selected = chosen && !Active; // read out as selected by screen readers
+            youtube.Selected = chosen && Active;
+            soulseek.Click += (s, e) => { sheet.Dismiss(); Pager(activity)?.SetCurrentItem(SoulseekSearchPage, false); };
+            // the warning shows every time YouTube Music is picked here, not only the first time
+            youtube.Click += (s, e) => { sheet.Dismiss(); Enter(activity); };
+            sheet.SetContentView(view);
+            sheet.Show();
         }
 
         /// <summary>Explains streaming mode, then switches to it.</summary>

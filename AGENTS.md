@@ -34,13 +34,13 @@ Everything MusicBay added is in `Seeker/Player/`. The rest is mostly Seeker's So
 | `AppUpdater.cs` | Update prompt |
 | `StreamDownloads.cs` | Downloads streamed songs: TagLibSharp writes the tags and cover, MediaStore saves them to `Music/MusicBay/<Artist> - <Album>/` so each album is one folder |
 | `Walkthrough.cs` | First-run tour, only on a fresh install (first install time equals last update time) |
-| `StreamFragment.cs` | Streaming mode (Search menu, no tab): YouTube Music search. Pages come from `Common/YtMusic.cs`; `PlayerService.OpenStream` finds the audio with YoutubeExplode |
+| `StreamFragment.cs` | Streaming mode (picked in the Search source chooser, no tab): YouTube Music search. Pages come from `Common/YtMusic.cs`; `PlayerService.OpenStream` finds the audio with YoutubeExplode |
 
 The Account panel, the Soulseek login and the Home screen host are in `Seeker/Login/LoginFragment.cs`, with `HomeMusicSection` filling the music part.
 
 ## Rules that are easy to break
 
-- **Tab pages are numbered, and Soulseek flows jump by number:** 0 Home (`LoginFragment`), 1 Search, 2 Transfers, 3 Browse, 4 Library, 5 streaming mode. Do not reorder them; add new pages at the end. Browse and streaming mode have no tab and show under Search in `GlassTabBar`; streaming mode opens from the Search menu, stays on across tab changes (`StreamFragment.Active`: the Search tab then opens page 5), and back returns to page 1. The visual tab order differs from the page order.
+- **Tab pages are numbered, and Soulseek flows jump by number:** 0 Home (`LoginFragment`), 1 Search, 2 Transfers, 3 Browse, 4 Library, 5 streaming mode. Do not reorder them; add new pages at the end. Browse and streaming mode have no tab and show under Search in `GlassTabBar`; the Search tab opens the last source used (`StreamFragment.Active`, kept in preferences: page 1 or 5); the first tap, or a tap while already on page 1 or 5, opens the source chooser (`StreamFragment.OnSearchTab`). Back from streaming mode returns to page 1. The visual tab order differs from the page order.
 - **Tabs change by tapping only.** Pager swiping is off on purpose, and `SidewaysDragGuard` stops sideways drags from counting as taps on rows. Do not turn swiping back on.
 - **Glass bars float over the pager, so content scrolls behind them.** `GlassBars.Reserve` adds the space. Scroll views get bottom padding on their child, never on themselves: padding on the scroll view makes drags from tappable rows stop scrolling. Wrap-content lists such as the search chips get none, or a gap opens under them.
 - **Blur needs Android 12, the lens effect Android 13.** Older phones get a nearly opaque capsule, so keep that fallback.
